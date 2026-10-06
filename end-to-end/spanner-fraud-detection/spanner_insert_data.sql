@@ -241,3 +241,15 @@ INSERT INTO AccountSignals (SignalId, PlayerId, AlertType, EventTime) VALUES ('c
 INSERT INTO AccountSignals (SignalId, PlayerId, AlertType, EventTime) VALUES ('ccdb20f8-cd05-42ae-b942-cb41396ec27d', 'eba84e9d-bd10-466e-8fcd-899c0a868149', 'SUSPICIOUS_MOVEMENT', '2026-03-02T05:11:28.078537+00:00');
 INSERT INTO AccountSignals (SignalId, PlayerId, AlertType, EventTime) VALUES ('721511f1-ebc4-45dc-adb5-9dafc5426bc3', '37a1e15c-a38c-4763-a2bd-042741bce012', 'SUSPICIOUS_MOVEMENT', '2026-03-02T05:11:28.078579+00:00');
 INSERT INTO AccountSignals (SignalId, PlayerId, AlertType, EventTime) VALUES ('4d8b0f0d-211a-4537-8c79-c2fd815812f3', 'c5337857-3b58-4b0c-8814-4585dcbf765f', 'SUSPICIOUS_MOVEMENT', '2026-03-02T05:11:28.078627+00:00');
+
+-- Populate AvatarEmbedding using the TextEmbeddingModel
+UPDATE Players
+SET AvatarEmbedding = (
+  SELECT embeddings.values
+  FROM ML.PREDICT(
+    MODEL TextEmbeddingModel,
+    (SELECT AvatarDescription AS content),
+    STRUCT(128 AS outputDimensionality)
+  )
+)
+WHERE AvatarEmbedding IS NULL;

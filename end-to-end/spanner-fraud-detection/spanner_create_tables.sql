@@ -45,3 +45,18 @@ CREATE TABLE IF NOT EXISTS Transactions (
 ) PRIMARY KEY (TransactionId);
 
 CREATE SEARCH INDEX AvatarSearchIndex ON Players(AvatarDescriptionTokens);
+
+CREATE MODEL IF NOT EXISTS TextEmbeddingModel
+INPUT(
+    content STRING(MAX)
+)
+OUTPUT(
+    embeddings STRUCT<
+        statistics STRUCT<truncated BOOL, token_count FLOAT64>,
+        values ARRAY<FLOAT64>
+    >
+)
+REMOTE OPTIONS (
+    endpoint = '//aiplatform.googleapis.com/projects/PROJECT_ID/locations/REGION/publishers/google/models/text-embedding-005',
+    default_batch_size = 5
+);
